@@ -2,8 +2,8 @@ import requests
 import json
 
 def fetch_vct_matches():
-    # 采用直连赛事数据接口，已经过全英文标点校准
-    url = "https://api.vlr.gg/api/v1/matches"
+    # 稳稳加上了 ?status=upcoming 尾巴！
+    url = "https://api.vlr.gg/api/v1/matches?status=upcoming"
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
     }
@@ -23,7 +23,7 @@ def fetch_vct_matches():
         
         for match in matches_data:
             tournament = match.get('tournament', '').upper()
-            # 已经把伦敦和大师赛关键词完美揉进去了
+            # 过滤伦敦大师赛等顶级S级赛事
             if any(kw in tournament for kw in ['VCT', 'CHAMPIONS', 'MASTERS', 'INTERNATIONAL', 'LONDON', '大师赛']):
                 status = match.get('status', '未开始')
                 if status == 'live': status = '直播中'

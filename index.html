@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VALORANT S-Tier 实时赛程</title>
+  <style>
+    body { margin: 0; background-color: #0d0f12; font-family: sans-serif; color: #e3e6eb; display: flex; justify-content: center; padding: 20px 10px; }
+    .match-container { width: 100%; max-width: 500px; }
+    .schedule-header { background-color: #161920; border-radius: 8px 8px 0 0; padding: 15px; border-bottom: 2px solid #ff4655; }
+    .logo { font-size: 16px; font-weight: bold; color: #ff4655; letter-spacing: 1px; }
+    .date-selector { font-size: 13px; color: #7e8593; margin-top: 5px; }
+    .match-list { display: flex; flex-direction: column; gap: 2px; }
+    .match-card { background-color: #161920; padding: 15px; display: flex; flex-direction: column; border-bottom: 1px solid #20242f; }
+    .match-time-box { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .time { font-size: 14px; font-weight: bold; color: #9aa4b5; }
+    .status-tag { font-size: 11px; padding: 2px 6px; border-radius: 4px; background-color: #2a2e3d; color: #9aa4b5; }
+    .match-card.直播中 .time { color: #ff4655; }
+    .match-card.直播中 .status-tag { background-color: #ff4655; color: #fff; }
+    .vs-container { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; }
+    .team { flex: 1; font-size: 18px; font-weight: bold; }
+    .team-a { text-align: right; padding-right: 15px; }
+    .team-b { text-align: left; padding-left: 15px; }
+    .score-box { display: flex; align-items: center; justify-content: center; background-color: #20242f; padding: 6px 12px; border-radius: 4px; min-width: 60px; }
+    .score { font-size: 16px; font-weight: bold; color: #00f59b; margin: 0 5px; }
+    .vs-text { font-size: 12px; color: #7e8593; }
+    .match-info { font-size: 11px; color: #565e6d; text-align: center; margin-top: 5px; }
+  </style>
+</head>
+<body>
+  <div class="match-container">
+    <header class="schedule-header">
+      <div class="logo">无畏契约 S级赛事表</div>
+      <div class="date-selector">后台全自动同步全球顶级赛程</div>
+    </header>
+    <div id="match-list" class="match-list"></div>
+  </div>
+
+  <script>
+    fetch('data.json')
+      .then(res => res.json())
+      .then(data => {
+        const list = document.getElementById('match-list');
+        if(data.length === 0) {
+          list.innerHTML = '<p style="text-align:center;color:#7e8593;padding:20px;">近期暂无 S 级赛事，机器人持续监控中...</p>';
+          return;
+        }
+        list.innerHTML = data.map(match => `
+          <div class="match-card ${match.状态}">
+            <div class="match-time-box">
+              <span class="time">${match.时间}</span>
+              <span class="status-tag">${match.状态}</span>
+            </div>
+            <div class="vs-container">
+              <div class="team team-a">${match.战队A}</div>
+              <div class="score-box">
+                <span class="score">${match.比分A}</span>
+                <span class="vs-text">VS</span>
+                <span class="score">${match.比分B}</span>
+              </div>
+              <div class="team team-b">${match.战队B}</div>
+            </div>
+            <div class="match-info">${match.赛事名称}</div>
+          </div>
+        `).join('');
+      }).catch(() => {
+        document.getElementById('match-list').innerHTML = '<p style="text-align:center;color:#7e8593;padding:20px;">网站刚建立，机器人正在火速首次抓取赛程中，请等一两分钟刷新...</p>';
+      });
+  </script>
+</body>
+</html>

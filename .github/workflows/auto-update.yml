@@ -1,0 +1,34 @@
+name: 自动更新无畏契约赛程
+
+on:
+  schedule:
+    - cron: '0 */2 * * *' # 每 2 小时自动运行一次
+  workflow_dispatch: # 允许你随时手动点击运行
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    steps:
+    - name: 检查代码
+      uses: actions/checkout@v3
+
+    - name: 设置Python环境
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: 安装依赖包
+      run: |
+        pip install requests
+
+    - name: 运行爬虫机器人
+      run: |
+        python fetch_vct.py
+
+    - name: 如果有新数据就提交保存
+      run: |
+        git config --global user.name "VCT-Bot"
+        git config --global user.email "bot@github.com"
+        git add data.json
+        git diff-index --quiet HEAD || git commit -m "自动更新最新S级赛程比分"
+        git push
